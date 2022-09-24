@@ -24,7 +24,7 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.spinrdf</groupId>
+	<groupId>org.aksw.thirdparty.org.spinrdf</groupId>
 	<artifactId>spinrdf</artifactId>
 	<packaging>jar</packaging>
 	<version>3.0.0-SNAPSHOT</version>
@@ -188,5 +188,151 @@
     </repository>
   </repositories>
   -->
+
+
+	<profiles>
+	
+		<!-- Gitflow release from aksw-develop to aksw-master mvn -Paksw -DargLine="-Paksw" 
+			gitflow:release-start gitflow:release-finish Deploy from aksw-master to nexus: 
+				mvn -Paksw source:jar deploy -->
+		<profile>
+			<id>aksw</id>
+			<activation>
+				<property>
+					<name>aksw</name>
+					<value>true</value>
+				</property>
+			</activation>
+	
+			<properties>
+				<maven-release-plugin.version>3.0.0-M5</maven-release-plugin.version>
+				<gitflow-maven-plugin.version>1.18.0</gitflow-maven-plugin.version>
+				<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+				<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+				<maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+				<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+				<nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
+	
+			</properties>
+	
+			<build>
+				<plugins>
+	
+					<!-- That's a sledge hammer solution - but at least it works ... -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-release-plugin</artifactId>
+						<version>${maven-release-plugin.version}</version>
+						<configuration>
+							<arguments>-P!source-artifacts</arguments>
+							<useReleaseProfile>false</useReleaseProfile>
+							<releaseProfiles>release</releaseProfiles>
+							<goals>-Dmaven.test.skip=true deploy</goals>
+							<autoVersionSubmodules>true</autoVersionSubmodules>
+						</configuration>
+					</plugin>
+	
+					<!-- <plugin> -->
+					<!-- <groupId>org.apache.maven.plugins</groupId> -->
+					<!-- <artifactId>maven-surefire-plugin</artifactId> -->
+					<!-- <configuration> -->
+					<!-- <skipTests>true</skipTests> -->
+					<!-- </configuration> -->
+					<!-- </plugin> -->
+	
+					<plugin>
+						<groupId>com.amashchenko.maven.plugin</groupId>
+						<artifactId>gitflow-maven-plugin</artifactId>
+						<version>${gitflow-maven-plugin.version}</version>
+						<configuration>
+							<gitFlowConfig>
+								<versionTagPrefix>v</versionTagPrefix>
+								<developmentBranch>aksw-develop</developmentBranch>
+								<productionBranch>aksw-master</productionBranch>
+							</gitFlowConfig>
+						</configuration>
+					</plugin>
+	
+	
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${maven-gpg-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<configuration>
+									<keyname>AKSW</keyname>
+									<passphraseServerId>AKSW</passphraseServerId>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+	
+					<!-- https://github.com/egineering-llc/gitflow-helper-maven-plugin/issues/99#issuecomment-433120247 -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<version>${maven-jar-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>add-test-jar</id>
+								<phase>none</phase>
+								<goals>
+									<goal>test-jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+	
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>${maven-source-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<phase>none</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>${nexus-staging-maven-plugin.version}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+	
+					<!-- https://github.com/egineering-llc/gitflow-helper-maven-plugin/issues/99#issuecomment-433120247 -->
+	
+				</plugins>
+			</build>
+	
+			<distributionManagement>
+				<repository>
+					<id>ossrh</id>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+				<snapshotRepository>
+					<id>maven.aksw.snapshots</id>
+					<name>AKSW Snapshot Repository</name>
+					<url>https://maven.aksw.org/archiva/repository/snapshots</url>
+				</snapshotRepository>
+			</distributionManagement>
+		</profile>
+	
+	</profiles>
 
 </project>
