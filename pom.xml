@@ -190,6 +190,24 @@
   -->
 
 
+	<developers>
+		<developer>
+			<id>holger-knublauch</id>
+			<name>Holger Knublauch</name>
+			<roles><role>Main Developer</role></roles>
+		</developer>
+		<developer>
+			<id>andy-seaborne</id>
+			<name>Andy Seaborne</name>
+			<roles><role>Github Repository Setup</role><role>Maven Project Setup</role></roles>
+		</developer>
+		<developer>
+			<id>claus-stadler</id>
+			<name>Claus Stadler</name>
+			<roles><role>AKSW Maven Release</role></roles>
+		</developer>
+	</developers>
+
 	<profiles>
 	
 		<!-- Gitflow release from aksw-develop to aksw-master mvn -Paksw -DargLine="-Paksw" 
