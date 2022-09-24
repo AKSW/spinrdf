@@ -140,6 +140,15 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>  
         <version>2.10.4</version>
+                                       <executions>
+                                        <execution>
+                                                <id>attach-javadocs</id>
+                                                <goals>
+                                                        <goal>jar</goal>
+                                                </goals>
+                                        </execution>
+                                </executions>
+ 
 				<configuration>
 					<quiet>true</quiet>
 					<encoding>UTF-8</encoding>
@@ -209,10 +218,10 @@
 	</developers>
 
 	<profiles>
-	
+
 		<!-- Gitflow release from aksw-develop to aksw-master mvn -Paksw -DargLine="-Paksw" 
 			gitflow:release-start gitflow:release-finish Deploy from aksw-master to nexus: 
-				mvn -Paksw source:jar deploy -->
+			mvn -Paksw source:jar deploy -->
 		<profile>
 			<id>aksw</id>
 			<activation>
@@ -221,21 +230,36 @@
 					<value>true</value>
 				</property>
 			</activation>
-	
+
 			<properties>
 				<maven-release-plugin.version>3.0.0-M5</maven-release-plugin.version>
 				<gitflow-maven-plugin.version>1.18.0</gitflow-maven-plugin.version>
 				<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
 				<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
-				<maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+				<maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
 				<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
 				<nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
-	
+				<maven-site-plugin.version>4.0.0-M3</maven-site-plugin.version>
 			</properties>
-	
+
+			<reporting>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>${maven-javadoc-plugin.version}</version>
+					</plugin>
+				</plugins>
+			</reporting>
+
 			<build>
 				<plugins>
-	
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-site-plugin</artifactId>
+						<version>${maven-site-plugin.version}</version>
+					</plugin>
+
 					<!-- That's a sledge hammer solution - but at least it works ... -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -249,7 +273,7 @@
 							<autoVersionSubmodules>true</autoVersionSubmodules>
 						</configuration>
 					</plugin>
-	
+
 					<!-- <plugin> -->
 					<!-- <groupId>org.apache.maven.plugins</groupId> -->
 					<!-- <artifactId>maven-surefire-plugin</artifactId> -->
@@ -257,7 +281,7 @@
 					<!-- <skipTests>true</skipTests> -->
 					<!-- </configuration> -->
 					<!-- </plugin> -->
-	
+
 					<plugin>
 						<groupId>com.amashchenko.maven.plugin</groupId>
 						<artifactId>gitflow-maven-plugin</artifactId>
@@ -270,8 +294,8 @@
 							</gitFlowConfig>
 						</configuration>
 					</plugin>
-	
-	
+
+
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
@@ -290,7 +314,7 @@
 							</execution>
 						</executions>
 					</plugin>
-	
+
 					<!-- https://github.com/egineering-llc/gitflow-helper-maven-plugin/issues/99#issuecomment-433120247 -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -306,7 +330,7 @@
 							</execution>
 						</executions>
 					</plugin>
-	
+
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
@@ -314,9 +338,9 @@
 						<executions>
 							<execution>
 								<id>attach-sources</id>
-								<phase>none</phase>
+								<phase>verify</phase>
 								<goals>
-									<goal>jar</goal>
+									<goal>jar-no-fork</goal>
 								</goals>
 							</execution>
 						</executions>
@@ -332,12 +356,12 @@
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
 						</configuration>
 					</plugin>
-	
+
 					<!-- https://github.com/egineering-llc/gitflow-helper-maven-plugin/issues/99#issuecomment-433120247 -->
-	
+
 				</plugins>
 			</build>
-	
+
 			<distributionManagement>
 				<repository>
 					<id>ossrh</id>
@@ -350,7 +374,7 @@
 				</snapshotRepository>
 			</distributionManagement>
 		</profile>
-	
+
 	</profiles>
 
 </project>
